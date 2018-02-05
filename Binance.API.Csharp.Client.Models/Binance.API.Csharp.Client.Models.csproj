@@ -78,6 +78,7 @@
     <Compile Include="WebSocket\KlineMessage.cs" />
     <Compile Include="WebSocket\OrderOrTradeUpdatedMessage.cs" />
     <Compile Include="WebSocket\AggregateTradeMessage.cs" />
+    <Compile Include="WebSocket\WebSocketMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

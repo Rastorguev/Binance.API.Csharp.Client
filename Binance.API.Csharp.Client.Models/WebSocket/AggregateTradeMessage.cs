@@ -2,12 +2,8 @@
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
-    public class AggregateTradeMessage
+    public class AggregateTradeMessage : WebSocketMessage
     {
-        [JsonProperty("e")]
-        public string EventType { get; set; }
-        [JsonProperty("E")]
-        public long EventTime { get; set; }
         [JsonProperty("s")]
         public string Symbol { get; set; }
         [JsonProperty("a")]

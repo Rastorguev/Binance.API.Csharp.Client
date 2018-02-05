@@ -1,28 +1,29 @@
-﻿using Binance.API.Csharp.Client.Domain.Abstract;
-using Binance.API.Csharp.Client.Domain.Interfaces;
-using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Binance.API.Csharp.Client.Utils;
+using Binance.API.Csharp.Client.Domain.Abstract;
+using Binance.API.Csharp.Client.Domain.Interfaces;
 using Binance.API.Csharp.Client.Models.Enums;
-using WebSocketSharp;
 using Binance.API.Csharp.Client.Models.WebSocket;
-using System.Net;
+using Binance.API.Csharp.Client.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WebSocketSharp;
 
 namespace Binance.API.Csharp.Client
 {
     public class ApiClient : ApiClientAbstract, IApiClient
     {
-
         /// <summary>
         /// ctor.
         /// </summary>
         /// <param name="apiKey">Key used to authenticate within the API.</param>
         /// <param name="apiSecret">API secret used to signed API calls.</param>
         /// <param name="apiUrl">API base url.</param>
-        public ApiClient(string apiKey, string apiSecret, string apiUrl = @"https://www.binance.com", string webSocketEndpoint = @"wss://stream.binance.com:9443/ws/", bool addDefaultHeaders = true) : base(apiKey, apiSecret, apiUrl, webSocketEndpoint, addDefaultHeaders)
+        public ApiClient(string apiKey, string apiSecret, string apiUrl = @"https://www.binance.com",
+            string webSocketEndpoint = @"wss://stream.binance.com:9443/ws/", bool addDefaultHeaders = true) : base(
+            apiKey, apiSecret, apiUrl, webSocketEndpoint, addDefaultHeaders)
         {
         }
 
@@ -35,14 +36,16 @@ namespace Binance.API.Csharp.Client
         /// <param name="isSigned">Specifies if the request needs a signature.</param>
         /// <param name="parameters">Request parameters.</param>
         /// <returns></returns>
-        public async Task<T> CallAsync<T>(ApiMethod method, string endpoint, bool isSigned = false, string parameters = null)
+        public async Task<T> CallAsync<T>(ApiMethod method, string endpoint, bool isSigned = false,
+            string parameters = null)
         {
             var finalEndpoint = endpoint + (string.IsNullOrWhiteSpace(parameters) ? "" : $"?{parameters}");
 
             if (isSigned)
             {
                 // Joining provided parameters
-                parameters += (!string.IsNullOrWhiteSpace(parameters) ? "&timestamp=" : "timestamp=") + Utilities.GenerateTimeStamp(DateTime.Now.ToUniversalTime());
+                parameters += (!string.IsNullOrWhiteSpace(parameters) ? "&timestamp=" : "timestamp=") +
+                              Utilities.GenerateTimeStamp(DateTime.Now.ToUniversalTime());
 
                 // Creating request signature
                 var signature = Utilities.GenerateSignature(_apiSecret, parameters);
@@ -74,7 +77,7 @@ namespace Binance.API.Csharp.Client
 
             // Error Values
             var eCode = 0;
-            string eMsg = "";
+            var eMsg = "";
             if (e.IsValidJson())
             {
                 try
@@ -84,7 +87,9 @@ namespace Binance.API.Csharp.Client
                     eCode = i["code"]?.Value<int>() ?? 0;
                     eMsg = i["msg"]?.Value<string>();
                 }
-                catch { }
+                catch
+                {
+                }
             }
 
             throw new Exception(string.Format("Api Error Code: {0} Message: {1}", eCode, eMsg));
@@ -97,7 +102,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="parameters">Paremeters to send to the Websocket.</param>
         /// <param name="messageDelegate">Deletage to callback after receive a message.</param>
         /// <param name="useCustomParser">Specifies if needs to use a custom parser for the response message.</param>
-        public void ConnectToWebSocket<T>(string parameters, MessageHandler<T> messageHandler, bool useCustomParser = false)
+        public void ConnectToWebSocket<T>(string parameters, MessageHandler<T> messageHandler,
+            bool useCustomParser = false)
         {
             var finalEndpoint = _webSocketEndpoint + parameters;
 
@@ -120,15 +126,9 @@ namespace Binance.API.Csharp.Client
                 messageHandler(eventData);
             };
 
-            ws.OnClose += (sender, e) =>
-            {
-                _openSockets.Remove(ws);
-            };
+            ws.OnClose += (sender, e) => { _openSockets.Remove(ws); };
 
-            ws.OnError += (sender, e) =>
-            {
-                _openSockets.Remove(ws);
-            };
+            ws.OnError += (sender, e) => { _openSockets.Remove(ws); };
 
             ws.Connect();
             _openSockets.Add(ws);
@@ -141,7 +141,9 @@ namespace Binance.API.Csharp.Client
         /// <param name="accountHandler">Deletage to callback after receive a account info message.</param>
         /// <param name="tradeHandler">Deletage to callback after receive a trade message.</param>
         /// <param name="orderHandler">Deletage to callback after receive a order message.</param>
-        public void ConnectToUserDataWebSocket(string parameters, MessageHandler<AccountUpdatedMessage> accountHandler, MessageHandler<OrderOrTradeUpdatedMessage> tradeHandler, MessageHandler<OrderOrTradeUpdatedMessage> orderHandler)
+        public void ConnectToUserDataWebSocket(string parameters, MessageHandler<AccountUpdatedMessage> accountHandler,
+            MessageHandler<OrderOrTradeUpdatedMessage> tradeHandler,
+            MessageHandler<OrderOrTradeUpdatedMessage> orderHandler)
         {
             var finalEndpoint = _webSocketEndpoint + parameters;
 
@@ -149,37 +151,35 @@ namespace Binance.API.Csharp.Client
 
             ws.OnMessage += (sender, e) =>
             {
-                var eventData = JsonConvert.DeserializeObject<dynamic>(e.Data);
+                var message = JsonConvert.DeserializeObject<WebSocketMessage>(e.Data);
 
-                switch (eventData.e)
+                switch (message.EventType)
                 {
                     case "outboundAccountInfo":
-                        accountHandler(JsonConvert.DeserializeObject<AccountUpdatedMessage>(e.Data));
+                        var accountUpdatedMessage = JsonConvert.DeserializeObject<AccountUpdatedMessage>(e.Data);
+                        accountHandler(accountUpdatedMessage);
                         break;
+
                     case "executionReport":
-                        var isTrade = ((string)eventData.x).ToLower() == "trade";
+                        var orderOrTradeUpdatedMessage =
+                            JsonConvert.DeserializeObject<OrderOrTradeUpdatedMessage>(e.Data);
+                        var isTrade = (orderOrTradeUpdatedMessage.ExecutionType).ToLower() == "trade";
 
                         if (isTrade)
                         {
-                            tradeHandler(JsonConvert.DeserializeObject<OrderOrTradeUpdatedMessage>(e.Data));
+                            tradeHandler(orderOrTradeUpdatedMessage);
                         }
                         else
                         {
-                            orderHandler(JsonConvert.DeserializeObject<OrderOrTradeUpdatedMessage>(e.Data));
+                            orderHandler(orderOrTradeUpdatedMessage);
                         }
                         break;
                 }
             };
 
-            ws.OnClose += (sender, e) =>
-            {
-                _openSockets.Remove(ws);
-            };
+            ws.OnClose += (sender, e) => { _openSockets.Remove(ws); };
 
-            ws.OnError += (sender, e) =>
-            {
-                _openSockets.Remove(ws);
-            };
+            ws.OnError += (sender, e) => { _openSockets.Remove(ws); };
 
             ws.Connect();
             _openSockets.Add(ws);

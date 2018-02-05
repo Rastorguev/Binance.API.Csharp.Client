@@ -2,12 +2,8 @@
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
-    public class OrderOrTradeUpdatedMessage
+    public class OrderOrTradeUpdatedMessage : WebSocketMessage
     {
-        [JsonProperty("e")]
-        public string OrderOrTradeReport { get; set; }
-        [JsonProperty("E")]
-        public long EventTime { get; set; }
         [JsonProperty("s")]
         public string Symbol { get; set; }
         [JsonProperty("c")]

@@ -3,12 +3,8 @@ using System.Collections.Generic;
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
-    public class AccountUpdatedMessage
+    public class AccountUpdatedMessage : WebSocketMessage
     {
-        [JsonProperty("e")]
-        public string EventType { get; set; }
-        [JsonProperty("E")]
-        public long EventTime { get; set; }
         [JsonProperty("m")]
         public int MakerCommission { get; set; }
         [JsonProperty("t")]
@@ -17,11 +13,11 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         public int BuyerCommission { get; set; }
         [JsonProperty("s")]
         public int SellerCommission { get; set; }
-        [JsonProperty("t")]
+        [JsonProperty("T")]
         public bool CanTrade { get; set; }
-        [JsonProperty("w")]
+        [JsonProperty("W")]
         public bool CanWithdraw { get; set; }
-        [JsonProperty("d")]
+        [JsonProperty("D")]
         public bool CanDeposit { get; set; }
         [JsonProperty("B")]
         public IEnumerable<Balance> Balances { get; set; }

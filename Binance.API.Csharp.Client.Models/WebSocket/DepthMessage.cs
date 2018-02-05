@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
-    public class DepthMessage
+    public class DepthMessage : WebSocketMessage
     {
-        public string EventType { get; set; }
-        public long EventTime { get; set; }
         public string Symbol { get; set; }
         public int UpdateId { get; set; }
         public IEnumerable<OrderBookOffer> Bids { get; set; }
