@@ -360,14 +360,15 @@ namespace Binance.API.Csharp.Client
         /// <param name="symbol">Ticker symbol.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<Order>> GetCurrentOpenOrders(string symbol, long recvWindow = 5000)
+        public async Task<IEnumerable<Order>> GetCurrentOpenOrders(string symbol = null, long recvWindow = 5000)
         {
-            if (string.IsNullOrWhiteSpace(symbol))
+            var parameters = $"recvWindow={recvWindow}";
+            if (symbol!=null)
             {
-                throw new ArgumentException("symbol cannot be empty. ", "symbol");
+                parameters += $"&symbol={symbol.ToUpper()}";
             }
 
-            var result = await _apiClient.CallAsync<IEnumerable<Order>>(ApiMethod.GET, EndPoints.CurrentOpenOrders, true, $"symbol={symbol.ToUpper()}&recvWindow={recvWindow}");
+            var result = await _apiClient.CallAsync<IEnumerable<Order>>(ApiMethod.GET, EndPoints.CurrentOpenOrders, true, parameters);
 
             return result;
         }
