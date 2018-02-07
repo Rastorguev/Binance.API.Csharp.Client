@@ -18,6 +18,8 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         public decimal OriginalQuantity { get; set; }
         [JsonProperty("p")]
         public decimal Price { get; set; }
+        [JsonProperty("P")]
+        public decimal StopPrice { get; set; }
         [JsonProperty("x")]
         public string ExecutionType { get; set; }
         [JsonProperty("X")]
