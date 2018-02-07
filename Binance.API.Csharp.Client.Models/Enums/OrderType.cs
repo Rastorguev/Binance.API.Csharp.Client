@@ -5,7 +5,12 @@
     /// </summary>
     public enum OrderType
     {
-        LIMIT,
-        MARKET
+        Limit,
+        Market,
+        StopLoss,
+        StopLossLimit,
+        TakeProfit,
+        TakeProfitLimit,
+        LimitMaker,
     }
 }

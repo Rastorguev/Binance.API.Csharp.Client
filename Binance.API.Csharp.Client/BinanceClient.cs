@@ -50,7 +50,7 @@ namespace Binance.API.Csharp.Client
             {
                 throw new ArgumentException("Quantity must be greater than zero.", "quantity");
             }
-            if (orderType == OrderType.LIMIT)
+            if (orderType == OrderType.Limit)
             {
                 if (unitPrice <= 0m)
                 {
@@ -78,7 +78,7 @@ namespace Binance.API.Csharp.Client
                     throw new Exception($"Iceberg orders not allowed for this symbol.");
                 }
 
-                if (orderType == OrderType.LIMIT)
+                if (orderType == OrderType.Limit)
                 {
                     if (unitPrice < priceFilter.MinPrice)
                     {
@@ -243,14 +243,14 @@ namespace Binance.API.Csharp.Client
         /// <param name="timeInForce">Indicates how long an order will remain active before it is executed or expires.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<NewOrder> PostNewOrder(string symbol, decimal quantity, decimal price, OrderSide side, OrderType orderType = OrderType.LIMIT, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m, long recvWindow = 5000)
+        public async Task<NewOrder> PostNewOrder(string symbol, decimal quantity, decimal price, OrderSide side, OrderType orderType = OrderType.Limit, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m, long recvWindow = 5000)
         {
             //Validates that the order is valid.
             ValidateOrderValue(symbol, orderType, price, quantity, icebergQty);
 
             var args = $"symbol={symbol.ToUpper()}&side={side}&type={orderType}&quantity={quantity}"
-                + (orderType == OrderType.LIMIT ? $"&timeInForce={timeInForce}" : "")
-                + (orderType == OrderType.LIMIT ? $"&price={price}" : "")
+                + (orderType == OrderType.Limit ? $"&timeInForce={timeInForce}" : "")
+                + (orderType == OrderType.Limit ? $"&price={price}" : "")
                 + (icebergQty > 0m ? $"&icebergQty={icebergQty}" : "")
                 + $"&recvWindow={recvWindow}";
             var result = await _apiClient.CallAsync<NewOrder>(ApiMethod.POST, EndPoints.NewOrder, true, args);
@@ -269,14 +269,14 @@ namespace Binance.API.Csharp.Client
         /// <param name="timeInForce">Indicates how long an order will remain active before it is executed or expires.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<dynamic> PostNewOrderTest(string symbol, decimal quantity, decimal price, OrderSide side, OrderType orderType = OrderType.LIMIT, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m, long recvWindow = 5000)
+        public async Task<dynamic> PostNewOrderTest(string symbol, decimal quantity, decimal price, OrderSide side, OrderType orderType = OrderType.Limit, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m, long recvWindow = 5000)
         {
             //Validates that the order is valid.
             ValidateOrderValue(symbol, orderType, price, quantity, icebergQty);
 
             var args = $"symbol={symbol.ToUpper()}&side={side}&type={orderType}&quantity={quantity}"
-                + (orderType == OrderType.LIMIT ? $"&timeInForce={timeInForce}" : "")
-                + (orderType == OrderType.LIMIT ? $"&price={price}" : "")
+                + (orderType == OrderType.Limit ? $"&timeInForce={timeInForce}" : "")
+                + (orderType == OrderType.Limit ? $"&price={price}" : "")
                 + (icebergQty > 0m ? $"&icebergQty={icebergQty}" : "")
                 + $"&recvWindow={recvWindow}";
             var result = await _apiClient.CallAsync<dynamic>(ApiMethod.POST, EndPoints.NewOrderTest, true, args);

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Binance.API.Csharp.Client.Models.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
@@ -9,9 +11,11 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         [JsonProperty("c")]
         public string NewClientOrderId { get; set; }
         [JsonProperty("S")]
-        public string Side { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public OrderSide Side { get; set; }
         [JsonProperty("o")]
-        public string Type { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public OrderType Type { get; set; }
         [JsonProperty("f")]
         public string TimeInForce { get; set; }
         [JsonProperty("q")]
@@ -23,11 +27,12 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         [JsonProperty("x")]
         public string ExecutionType { get; set; }
         [JsonProperty("X")]
-        public string Status { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public OrderStatus Status { get; set; }
         [JsonProperty("r")]
         public string RejectReason { get; set; }
         [JsonProperty("i")]
-        public int Orderid { get; set; }
+        public int OrderId { get; set; }
         [JsonProperty("l")]
         public decimal LastFilledTradeQuantity { get; set; }
         [JsonProperty("z")]
