@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Binance.API.Csharp.Client.Models.Enums;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Binance.API.Csharp.Client.Models.Account
 {
@@ -17,18 +20,28 @@ namespace Binance.API.Csharp.Client.Models.Account
         [JsonProperty("executedQty")]
         public decimal ExecutedQty { get; set; }
         [JsonProperty("status")]
-        public string Status { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public OrderStatus Status { get; set; }
         [JsonProperty("timeInForce")]
         public string TimeInForce { get; set; }
         [JsonProperty("type")]
         public string Type { get; set; }
         [JsonProperty("side")]
-        public string Side { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public OrderSide Side { get; set; }
         [JsonProperty("stopPrice")]
         public decimal StopPrice { get; set; }
         [JsonProperty("icebergQty")]
         public decimal IcebergQty { get; set; }
         [JsonProperty("time")]
-        public long Time { get; set; }
+        public long UnixTime { get; set; }
+    }
+
+    public static class OrderExtensions
+    {
+        public static DateTime GetTime(this Order order)
+        {
+            return DateTimeOffset.FromUnixTimeMilliseconds(order.UnixTime).DateTime;
+        }
     }
 }

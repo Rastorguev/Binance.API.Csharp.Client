@@ -69,27 +69,27 @@ namespace Binance.API.Csharp.Client.Test
         [TestMethod]
         public void PostLimitOrder()
         {
-            var buyOrder = binanceClient.PostNewOrder("KNCETH", 100m, 0.005m, OrderSide.BUY).Result;
-            var sellOrder = binanceClient.PostNewOrder("KNCETH", 1000m, 1m, OrderSide.SELL).Result;
+            var buyOrder = binanceClient.PostNewOrder("KNCETH", 100m, 0.005m, OrderSide.Buy).Result;
+            var sellOrder = binanceClient.PostNewOrder("KNCETH", 1000m, 1m, OrderSide.Sell).Result;
         }
 
         [TestMethod]
         public void PostMarketOrder()
         {
-            var buyMarketOrder = binanceClient.PostNewOrder("ethbtc", 0.01m, 0m, OrderSide.BUY, OrderType.Market).Result;
-            var sellMarketOrder = binanceClient.PostNewOrder("ethbtc", 0.01m, 0m, OrderSide.SELL, OrderType.Market).Result;
+            var buyMarketOrder = binanceClient.PostNewOrder("ethbtc", 0.01m, 0m, OrderSide.Buy, OrderType.Market).Result;
+            var sellMarketOrder = binanceClient.PostNewOrder("ethbtc", 0.01m, 0m, OrderSide.Sell, OrderType.Market).Result;
         }
 
         [TestMethod]
         public void PostIcebergOrder()
         {
-            var icebergOrder = binanceClient.PostNewOrder("ethbtc", 0.01m, 0m, OrderSide.BUY, OrderType.Market, icebergQty: 2m).Result;
+            var icebergOrder = binanceClient.PostNewOrder("ethbtc", 0.01m, 0m, OrderSide.Buy, OrderType.Market, icebergQty: 2m).Result;
         }
 
         [TestMethod]
         public void PostNewLimitOrderTest()
         {
-            var testOrder = binanceClient.PostNewOrderTest("ethbtc", 1m, 0.1m, OrderSide.BUY).Result;
+            var testOrder = binanceClient.PostNewOrderTest("ethbtc", 1m, 0.1m, OrderSide.Buy).Result;
         }
 
         [TestMethod]
