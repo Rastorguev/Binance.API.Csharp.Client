@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Abstract\ApiClientAbstract.cs" />
     <Compile Include="Abstract\BinanceClientAbstract.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="Interfaces\IApiClient.cs" />
     <Compile Include="Interfaces\IBinanceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

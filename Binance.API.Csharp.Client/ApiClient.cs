@@ -8,7 +8,6 @@ using Binance.API.Csharp.Client.Models.Enums;
 using Binance.API.Csharp.Client.Models.WebSocket;
 using Binance.API.Csharp.Client.Utils;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 
 namespace Binance.API.Csharp.Client
@@ -43,56 +42,41 @@ namespace Binance.API.Csharp.Client
 
             if (isSigned)
             {
-                // Joining provided parameters
                 parameters += (!string.IsNullOrWhiteSpace(parameters) ? "&timestamp=" : "timestamp=") +
                               Utilities.GenerateTimeStamp(DateTime.Now.ToUniversalTime());
 
-                // Creating request signature
                 var signature = Utilities.GenerateSignature(_apiSecret, parameters);
                 finalEndpoint = $"{endpoint}?{parameters}&signature={signature}";
             }
 
             var request = new HttpRequestMessage(Utilities.CreateHttpMethod(method.ToString()), finalEndpoint);
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            if (response.IsSuccessStatusCode)
+
+            try
             {
-                // Api return is OK
-                response.EnsureSuccessStatusCode();
-
-                // Get the result
-                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                // Serialize and return result
-                return JsonConvert.DeserializeObject<T>(result);
-            }
-
-            // We received an error
-            if (response.StatusCode == HttpStatusCode.GatewayTimeout)
-            {
-                throw new Exception("Api Request Timeout.");
-            }
-
-            // Get te error code and message
-            var e = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            // Error Values
-            var eCode = 0;
-            var eMsg = "";
-            if (e.IsValidJson())
-            {
-                try
+                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                if (response.IsSuccessStatusCode)
                 {
-                    var i = JObject.Parse(e);
-
-                    eCode = i["code"]?.Value<int>() ?? 0;
-                    eMsg = i["msg"]?.Value<string>();
+                    return JsonConvert.DeserializeObject<T>(content);
                 }
-                catch
+                if (response.StatusCode == HttpStatusCode.GatewayTimeout)
                 {
+                    throw new BinanceApiException("Api Request Timeout.");
+                }
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    var errorPayload = JsonConvert.DeserializeObject<BinanceErrorPayload>(content);
+
+                    throw new InvalidRequestException(errorPayload.ErrorCode, errorPayload.Message);
                 }
             }
 
-            throw new Exception(string.Format("Api Error Code: {0} Message: {1}", eCode, eMsg));
+            catch (Exception ex) when (!(ex is BinanceApiException))
+            {
+                throw new BinanceApiException("Binance Api Error", ex);
+            }
+
+            throw new BinanceApiException("Binance Api Error");
         }
 
         /// <summary>
@@ -163,7 +147,7 @@ namespace Binance.API.Csharp.Client
                     case "executionReport":
                         var orderOrTradeUpdatedMessage =
                             JsonConvert.DeserializeObject<OrderOrTradeUpdatedMessage>(e.Data);
-                        var isTrade = (orderOrTradeUpdatedMessage.ExecutionType).ToLower() == "trade";
+                        var isTrade = orderOrTradeUpdatedMessage.ExecutionType.ToLower() == "trade";
 
                         if (isTrade)
                         {
@@ -183,6 +167,15 @@ namespace Binance.API.Csharp.Client
 
             ws.Connect();
             _openSockets.Add(ws);
+        }
+
+        private class BinanceErrorPayload
+        {
+            [JsonProperty("code")]
+            public int ErrorCode { get; set; }
+
+            [JsonProperty("msg")]
+            public string Message { get; set; }
         }
     }
 }
