@@ -5,7 +5,7 @@
     /// </summary>
     public enum OrderSide
     {
-        BUY,
-        SELL
+        Buy,
+        Sell
     }
 }
