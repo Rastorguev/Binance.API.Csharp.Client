@@ -19,7 +19,7 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         [JsonProperty("f")]
         public string TimeInForce { get; set; }
         [JsonProperty("q")]
-        public decimal OriginalQuantity { get; set; }
+        public decimal OrigQty { get; set; }
         [JsonProperty("p")]
         public decimal Price { get; set; }
         [JsonProperty("P")]
