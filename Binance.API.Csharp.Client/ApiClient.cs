@@ -147,8 +147,8 @@ namespace Binance.API.Csharp.Client
                     case "executionReport":
                         var orderOrTradeUpdatedMessage =
                             JsonConvert.DeserializeObject<OrderOrTradeUpdatedMessage>(e.Data);
-                        var isTrade = orderOrTradeUpdatedMessage.ExecutionType.ToLower() == "trade";
-
+                        var isTrade = orderOrTradeUpdatedMessage.ExecutionType == ExecutionType.Trade;
+                   
                         if (isTrade)
                         {
                             tradeHandler(orderOrTradeUpdatedMessage);

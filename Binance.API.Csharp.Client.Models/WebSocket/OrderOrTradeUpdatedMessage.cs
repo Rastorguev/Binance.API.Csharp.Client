@@ -25,7 +25,8 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         [JsonProperty("P")]
         public decimal StopPrice { get; set; }
         [JsonProperty("x")]
-        public string ExecutionType { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ExecutionType ExecutionType { get; set; }
         [JsonProperty("X")]
         [JsonConverter(typeof(StringEnumConverter))]
         public OrderStatus Status { get; set; }
