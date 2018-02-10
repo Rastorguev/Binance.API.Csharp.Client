@@ -4,8 +4,12 @@ using Newtonsoft.Json.Converters;
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
-    public class OrderOrTradeUpdatedMessage : WebSocketMessage
+    public class OrderOrTradeUpdatedMessage : IWebSocketMessage, IOrder
     {
+        [JsonProperty("e")]
+        public string EventType { get; set; }
+        [JsonProperty("E")]
+        public long EventTime { get; set; }
         [JsonProperty("s")]
         public string Symbol { get; set; }
         [JsonProperty("c")]

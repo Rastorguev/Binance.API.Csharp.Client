@@ -78,10 +78,11 @@
     <Compile Include="UserStream\UserStreamInfo.cs" />
     <Compile Include="WebSocket\AccountUpdatedMessage.cs" />
     <Compile Include="WebSocket\DepthMessage.cs" />
+    <Compile Include="WebSocket\IOrder.cs" />
     <Compile Include="WebSocket\KlineMessage.cs" />
     <Compile Include="WebSocket\OrderOrTradeUpdatedMessage.cs" />
     <Compile Include="WebSocket\AggregateTradeMessage.cs" />
-    <Compile Include="WebSocket\WebSocketMessage.cs" />
+    <Compile Include="WebSocket\IWebSocketMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

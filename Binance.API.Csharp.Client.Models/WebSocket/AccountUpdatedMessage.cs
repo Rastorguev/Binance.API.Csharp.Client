@@ -3,8 +3,12 @@ using System.Collections.Generic;
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
-    public class AccountUpdatedMessage : WebSocketMessage
+    public class AccountUpdatedMessage : IWebSocketMessage
     {
+        [JsonProperty("e")]
+        public string EventType { get; set; }
+        [JsonProperty("E")]
+        public long EventTime { get; set; }
         [JsonProperty("m")]
         public int MakerCommission { get; set; }
         [JsonProperty("t")]

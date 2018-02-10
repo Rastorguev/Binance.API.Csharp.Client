@@ -2,7 +2,13 @@
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
-    public class WebSocketMessage
+    public interface IWebSocketMessage
+    {
+        string EventType { get; set; }
+        long EventTime { get; set; }
+    }
+
+    public class WebSocketMessage : IWebSocketMessage
     {
         [JsonProperty("e")]
         public string EventType { get; set; }
