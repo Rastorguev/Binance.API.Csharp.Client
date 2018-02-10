@@ -1,4 +1,8 @@
-﻿using Binance.API.Csharp.Client.Domain.Abstract;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Binance.API.Csharp.Client.Domain.Abstract;
 using Binance.API.Csharp.Client.Domain.Interfaces;
 using Binance.API.Csharp.Client.Models.Account;
 using Binance.API.Csharp.Client.Models.Enums;
@@ -8,10 +12,6 @@ using Binance.API.Csharp.Client.Models.Market.TradingRules;
 using Binance.API.Csharp.Client.Models.UserStream;
 using Binance.API.Csharp.Client.Models.WebSocket;
 using Binance.API.Csharp.Client.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Binance.API.Csharp.Client
 {
@@ -31,6 +31,7 @@ namespace Binance.API.Csharp.Client
         }
 
         #region Private Methods
+
         /// <summary>
         /// Validates that a new order is valid before posting it.
         /// </summary>
@@ -39,7 +40,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="unitPrice">Price of the transaction.</param>
         /// <param name="quantity">Quantity to transaction.</param>
         /// <param name="stopPrice">Price for stop orders.</param>
-        private void ValidateOrderValue(string symbol, OrderType orderType, decimal unitPrice, decimal quantity, decimal icebergQty)
+        private void ValidateOrderValue(string symbol, OrderType orderType, decimal unitPrice, decimal quantity,
+            decimal icebergQty)
         {
             // Validating parameters values.
             if (string.IsNullOrWhiteSpace(symbol))
@@ -61,7 +63,8 @@ namespace Binance.API.Csharp.Client
             // Validating Trading Rules
             if (_tradingRules != null)
             {
-                var symbolInfo = _tradingRules.Symbols.Where(r => r.SymbolName.ToUpper() == symbol.ToUpper()).FirstOrDefault();
+                var symbolInfo = _tradingRules.Symbols.Where(r => r.SymbolName.ToUpper() == symbol.ToUpper())
+                    .FirstOrDefault();
                 var priceFilter = symbolInfo.Filters.Where(r => r.FilterType == "PRICE_FILTER").FirstOrDefault();
                 var sizeFilter = symbolInfo.Filters.Where(r => r.FilterType == "LOT_SIZE").FirstOrDefault();
 
@@ -71,7 +74,9 @@ namespace Binance.API.Csharp.Client
                 }
                 if (quantity < sizeFilter.MinQty)
                 {
-                    throw new ArgumentException($"Quantity for this symbol is lower than allowed! Quantity must be greater than: {sizeFilter.MinQty}", "quantity");
+                    throw new ArgumentException(
+                        $"Quantity for this symbol is lower than allowed! Quantity must be greater than: {sizeFilter.MinQty}",
+                        "quantity");
                 }
                 if (icebergQty > 0m && !symbolInfo.IcebergAllowed)
                 {
@@ -82,7 +87,9 @@ namespace Binance.API.Csharp.Client
                 {
                     if (unitPrice < priceFilter.MinPrice)
                     {
-                        throw new ArgumentException($"Price for this symbol is lower than allowed! Price must be greater than: {priceFilter.MinPrice}", "price");
+                        throw new ArgumentException(
+                            $"Price for this symbol is lower than allowed! Price must be greater than: {priceFilter.MinPrice}",
+                            "price");
                     }
                 }
             }
@@ -93,9 +100,11 @@ namespace Binance.API.Csharp.Client
             var apiClient = new ApiClient("", "", EndPoints.TradingRules, addDefaultHeaders: false);
             _tradingRules = apiClient.CallAsync<TradingRules>(ApiMethod.GET, "").Result;
         }
+
         #endregion
 
         #region General
+
         /// Test connectivity to the Rest API.
         /// </summary>
         /// <returns></returns>
@@ -105,6 +114,7 @@ namespace Binance.API.Csharp.Client
 
             return result;
         }
+
         /// <summary>
         /// Test connectivity to the Rest API and get the current server time.
         /// </summary>
@@ -115,9 +125,11 @@ namespace Binance.API.Csharp.Client
 
             return result;
         }
+
         #endregion
 
         #region Market Data
+
         /// <summary>
         /// Get order book for a particular symbol.
         /// </summary>
@@ -131,7 +143,8 @@ namespace Binance.API.Csharp.Client
                 throw new ArgumentException("symbol cannot be empty. ", "symbol");
             }
 
-            var result = await _apiClient.CallAsync<dynamic>(ApiMethod.GET, EndPoints.OrderBook, false, $"symbol={symbol.ToUpper()}&limit={limit}");
+            var result = await _apiClient.CallAsync<dynamic>(ApiMethod.GET, EndPoints.OrderBook, false,
+                $"symbol={symbol.ToUpper()}&limit={limit}");
 
             var parser = new CustomParser();
             var parsedResult = parser.GetParsedOrderBook(result);
@@ -152,7 +165,8 @@ namespace Binance.API.Csharp.Client
                 throw new ArgumentException("symbol cannot be empty. ", "symbol");
             }
 
-            var result = await _apiClient.CallAsync<IEnumerable<AggregateTrade>>(ApiMethod.GET, EndPoints.AggregateTrades, false, $"symbol={symbol.ToUpper()}&limit={limit}");
+            var result = await _apiClient.CallAsync<IEnumerable<AggregateTrade>>(ApiMethod.GET,
+                EndPoints.AggregateTrades, false, $"symbol={symbol.ToUpper()}&limit={limit}");
 
             return result;
         }
@@ -164,7 +178,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="interval">Time interval to retreive.</param>
         /// <param name="limit">Limit of records to retrieve.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<Candlestick>> GetCandleSticks(string symbol, TimeInterval interval, DateTime? startTime = null, DateTime? endTime = null, int limit = 500)
+        public async Task<IEnumerable<Candlestick>> GetCandleSticks(string symbol, TimeInterval interval,
+            DateTime? startTime = null, DateTime? endTime = null, int limit = 500)
         {
             if (string.IsNullOrWhiteSpace(symbol))
             {
@@ -172,9 +187,9 @@ namespace Binance.API.Csharp.Client
             }
 
             var args = $"symbol={symbol.ToUpper()}&interval={interval.GetDescription()}"
-                + (startTime.HasValue ? $"&startTime={startTime.Value.GetUnixTimeStamp()}" : "")
-                + (endTime.HasValue ? $"&endTime={endTime.Value.GetUnixTimeStamp()}" : "")
-                + $"&limit={limit}";
+                       + (startTime.HasValue ? $"&startTime={startTime.Value.GetUnixTimeStamp()}" : "")
+                       + (endTime.HasValue ? $"&endTime={endTime.Value.GetUnixTimeStamp()}" : "")
+                       + $"&limit={limit}";
 
             var result = await _apiClient.CallAsync<dynamic>(ApiMethod.GET, EndPoints.Candlesticks, false, args);
 
@@ -197,12 +212,14 @@ namespace Binance.API.Csharp.Client
 
             if (!string.IsNullOrEmpty(symbol))
             {
-                var data = await _apiClient.CallAsync<PriceChangeInfo>(ApiMethod.GET, EndPoints.TickerPriceChange24H, false, args);
+                var data = await _apiClient.CallAsync<PriceChangeInfo>(ApiMethod.GET, EndPoints.TickerPriceChange24H,
+                    false, args);
                 result.Add(data);
             }
             else
             {
-                result = await _apiClient.CallAsync<List<PriceChangeInfo>>(ApiMethod.GET, EndPoints.TickerPriceChange24H, false, args);
+                result = await _apiClient.CallAsync<List<PriceChangeInfo>>(ApiMethod.GET,
+                    EndPoints.TickerPriceChange24H, false, args);
             }
 
             return result;
@@ -214,7 +231,8 @@ namespace Binance.API.Csharp.Client
         /// <returns></returns>
         public async Task<IEnumerable<SymbolPrice>> GetAllPrices()
         {
-            var result = await _apiClient.CallAsync<IEnumerable<SymbolPrice>>(ApiMethod.GET, EndPoints.AllPrices, false);
+            var result =
+                await _apiClient.CallAsync<IEnumerable<SymbolPrice>>(ApiMethod.GET, EndPoints.AllPrices, false);
 
             return result;
         }
@@ -225,13 +243,17 @@ namespace Binance.API.Csharp.Client
         /// <returns></returns>
         public async Task<IEnumerable<OrderBookTicker>> GetOrderBookTicker()
         {
-            var result = await _apiClient.CallAsync<IEnumerable<OrderBookTicker>>(ApiMethod.GET, EndPoints.OrderBookTicker, false);
+            var result =
+                await _apiClient.CallAsync<IEnumerable<OrderBookTicker>>(ApiMethod.GET, EndPoints.OrderBookTicker,
+                    false);
 
             return result;
         }
+
         #endregion
 
         #region Account Information
+
         /// <summary>
         /// Send in a new order.
         /// </summary>
@@ -243,12 +265,15 @@ namespace Binance.API.Csharp.Client
         /// <param name="timeInForce">Indicates how long an order will remain active before it is executed or expires.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<NewOrder> PostNewOrder(string symbol, decimal quantity, decimal price, OrderSide side, OrderType orderType = OrderType.Limit, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m, long recvWindow = 5000)
+        public async Task<NewOrder> PostNewOrder(string symbol, decimal quantity, decimal price, OrderSide side,
+            OrderType orderType = OrderType.Limit, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m,
+            long recvWindow = 5000)
         {
             //Validates that the order is valid.
             ValidateOrderValue(symbol, orderType, price, quantity, icebergQty);
 
-            var args = $"symbol={symbol.ToUpper()}&side={side}&type={orderType}&quantity={quantity}"
+            var args =
+                $"symbol={symbol.ToUpper()}&side={side.ToRequestParam()}&type={orderType.ToRequestParam()}&quantity={quantity}"
                 + (orderType == OrderType.Limit ? $"&timeInForce={timeInForce}" : "")
                 + (orderType == OrderType.Limit ? $"&price={price}" : "")
                 + (icebergQty > 0m ? $"&icebergQty={icebergQty}" : "")
@@ -269,12 +294,15 @@ namespace Binance.API.Csharp.Client
         /// <param name="timeInForce">Indicates how long an order will remain active before it is executed or expires.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<dynamic> PostNewOrderTest(string symbol, decimal quantity, decimal price, OrderSide side, OrderType orderType = OrderType.Limit, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m, long recvWindow = 5000)
+        public async Task<dynamic> PostNewOrderTest(string symbol, decimal quantity, decimal price, OrderSide side,
+            OrderType orderType = OrderType.Limit, TimeInForce timeInForce = TimeInForce.GTC, decimal icebergQty = 0m,
+            long recvWindow = 5000)
         {
             //Validates that the order is valid.
             ValidateOrderValue(symbol, orderType, price, quantity, icebergQty);
 
-            var args = $"symbol={symbol.ToUpper()}&side={side}&type={orderType}&quantity={quantity}"
+            var args =
+                $"symbol={symbol.ToUpper()}&side={side.ToRequestParam()}&type={orderType.ToRequestParam()}&quantity={quantity}"
                 + (orderType == OrderType.Limit ? $"&timeInForce={timeInForce}" : "")
                 + (orderType == OrderType.Limit ? $"&price={price}" : "")
                 + (icebergQty > 0m ? $"&icebergQty={icebergQty}" : "")
@@ -292,7 +320,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="origClientOrderId">origClientOrderId of the order to retrieve.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<Order> GetOrder(string symbol, long? orderId = null, string origClientOrderId = null, long recvWindow = 5000)
+        public async Task<Order> GetOrder(string symbol, long? orderId = null, string origClientOrderId = null,
+            long recvWindow = 5000)
         {
             var args = $"symbol={symbol.ToUpper()}&recvWindow={recvWindow}";
 
@@ -327,7 +356,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="origClientOrderId">origClientOrderId of the order to cancel.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<CanceledOrder> CancelOrder(string symbol, long? orderId = null, string origClientOrderId = null, long recvWindow = 5000)
+        public async Task<CanceledOrder> CancelOrder(string symbol, long? orderId = null,
+            string origClientOrderId = null, long recvWindow = 5000)
         {
             if (string.IsNullOrWhiteSpace(symbol))
             {
@@ -363,12 +393,14 @@ namespace Binance.API.Csharp.Client
         public async Task<IEnumerable<Order>> GetCurrentOpenOrders(string symbol = null, long recvWindow = 5000)
         {
             var parameters = $"recvWindow={recvWindow}";
-            if (symbol!=null)
+            if (symbol != null)
             {
                 parameters += $"&symbol={symbol.ToUpper()}";
             }
 
-            var result = await _apiClient.CallAsync<IEnumerable<Order>>(ApiMethod.GET, EndPoints.CurrentOpenOrders, true, parameters);
+            var result =
+                await _apiClient.CallAsync<IEnumerable<Order>>(ApiMethod.GET, EndPoints.CurrentOpenOrders, true,
+                    parameters);
 
             return result;
         }
@@ -381,14 +413,17 @@ namespace Binance.API.Csharp.Client
         /// <param name="limit">Limit of records to retrieve.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<Order>> GetAllOrders(string symbol, long? orderId = null, int limit = 500, long recvWindow = 5000)
+        public async Task<IEnumerable<Order>> GetAllOrders(string symbol, long? orderId = null, int limit = 500,
+            long recvWindow = 5000)
         {
             if (string.IsNullOrWhiteSpace(symbol))
             {
                 throw new ArgumentException("symbol cannot be empty. ", "symbol");
             }
 
-            var result = await _apiClient.CallAsync<IEnumerable<Order>>(ApiMethod.GET, EndPoints.AllOrders, true, $"symbol={symbol.ToUpper()}&limit={limit}&recvWindow={recvWindow}" + (orderId.HasValue ? $"&orderId={orderId.Value}" : ""));
+            var result = await _apiClient.CallAsync<IEnumerable<Order>>(ApiMethod.GET, EndPoints.AllOrders, true,
+                $"symbol={symbol.ToUpper()}&limit={limit}&recvWindow={recvWindow}" +
+                (orderId.HasValue ? $"&orderId={orderId.Value}" : ""));
 
             return result;
         }
@@ -400,7 +435,8 @@ namespace Binance.API.Csharp.Client
         /// <returns></returns>
         public async Task<AccountInfo> GetAccountInfo(long recvWindow = 5000)
         {
-            var result = await _apiClient.CallAsync<AccountInfo>(ApiMethod.GET, EndPoints.AccountInformation, true, $"recvWindow={recvWindow}");
+            var result = await _apiClient.CallAsync<AccountInfo>(ApiMethod.GET, EndPoints.AccountInformation, true,
+                $"recvWindow={recvWindow}");
 
             return result;
         }
@@ -418,7 +454,8 @@ namespace Binance.API.Csharp.Client
                 throw new ArgumentException("symbol cannot be empty. ", "symbol");
             }
 
-            var result = await _apiClient.CallAsync<IEnumerable<Trade>>(ApiMethod.GET, EndPoints.TradeList, true, $"symbol={symbol.ToUpper()}&recvWindow={recvWindow}");
+            var result = await _apiClient.CallAsync<IEnumerable<Trade>>(ApiMethod.GET, EndPoints.TradeList, true,
+                $"symbol={symbol.ToUpper()}&recvWindow={recvWindow}");
 
             return result;
         }
@@ -432,7 +469,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="addressName">Address name.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<WithdrawResponse> Withdraw(string asset, decimal amount, string address, string addressName = "", long recvWindow = 5000)
+        public async Task<WithdrawResponse> Withdraw(string asset, decimal amount, string address,
+            string addressName = "", long recvWindow = 5000)
         {
             if (string.IsNullOrWhiteSpace(asset))
             {
@@ -448,8 +486,8 @@ namespace Binance.API.Csharp.Client
             }
 
             var args = $"asset={asset.ToUpper()}&amount={amount}&address={address}"
-              + (!string.IsNullOrWhiteSpace(addressName) ? $"&name={addressName}" : "")
-              + $"&recvWindow={recvWindow}";
+                       + (!string.IsNullOrWhiteSpace(addressName) ? $"&name={addressName}" : "")
+                       + $"&recvWindow={recvWindow}";
 
             var result = await _apiClient.CallAsync<WithdrawResponse>(ApiMethod.POST, EndPoints.Withdraw, true, args);
 
@@ -465,7 +503,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="endTime">End time.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<DepositHistory> GetDepositHistory(string asset, DepositStatus? status = null, DateTime? startTime = null, DateTime? endTime = null, long recvWindow = 5000)
+        public async Task<DepositHistory> GetDepositHistory(string asset, DepositStatus? status = null,
+            DateTime? startTime = null, DateTime? endTime = null, long recvWindow = 5000)
         {
             if (string.IsNullOrWhiteSpace(asset))
             {
@@ -473,12 +512,13 @@ namespace Binance.API.Csharp.Client
             }
 
             var args = $"asset={asset.ToUpper()}"
-              + (status.HasValue ? $"&status={(int)status}" : "")
-              + (startTime.HasValue ? $"&startTime={startTime.Value.GetUnixTimeStamp()}" : "")
-              + (endTime.HasValue ? $"&endTime={endTime.Value.GetUnixTimeStamp()}" : "")
-              + $"&recvWindow={recvWindow}";
+                       + (status.HasValue ? $"&status={(int) status}" : "")
+                       + (startTime.HasValue ? $"&startTime={startTime.Value.GetUnixTimeStamp()}" : "")
+                       + (endTime.HasValue ? $"&endTime={endTime.Value.GetUnixTimeStamp()}" : "")
+                       + $"&recvWindow={recvWindow}";
 
-            var result = await _apiClient.CallAsync<DepositHistory>(ApiMethod.POST, EndPoints.DepositHistory, true, args);
+            var result =
+                await _apiClient.CallAsync<DepositHistory>(ApiMethod.POST, EndPoints.DepositHistory, true, args);
 
             return result;
         }
@@ -492,7 +532,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="endTime">End time.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        public async Task<WithdrawHistory> GetWithdrawHistory(string asset, WithdrawStatus? status = null, DateTime? startTime = null, DateTime? endTime = null, long recvWindow = 5000)
+        public async Task<WithdrawHistory> GetWithdrawHistory(string asset, WithdrawStatus? status = null,
+            DateTime? startTime = null, DateTime? endTime = null, long recvWindow = 5000)
         {
             if (string.IsNullOrWhiteSpace(asset))
             {
@@ -500,18 +541,21 @@ namespace Binance.API.Csharp.Client
             }
 
             var args = $"asset={asset.ToUpper()}"
-              + (status.HasValue ? $"&status={(int)status}" : "")
-              + (startTime.HasValue ? $"&startTime={Utilities.GenerateTimeStamp(startTime.Value)}" : "")
-              + (endTime.HasValue ? $"&endTime={Utilities.GenerateTimeStamp(endTime.Value)}" : "")
-              + $"&recvWindow={recvWindow}";
+                       + (status.HasValue ? $"&status={(int) status}" : "")
+                       + (startTime.HasValue ? $"&startTime={Utilities.GenerateTimeStamp(startTime.Value)}" : "")
+                       + (endTime.HasValue ? $"&endTime={Utilities.GenerateTimeStamp(endTime.Value)}" : "")
+                       + $"&recvWindow={recvWindow}";
 
-            var result = await _apiClient.CallAsync<WithdrawHistory>(ApiMethod.POST, EndPoints.WithdrawHistory, true, args);
+            var result =
+                await _apiClient.CallAsync<WithdrawHistory>(ApiMethod.POST, EndPoints.WithdrawHistory, true, args);
 
             return result;
         }
+
         #endregion
 
         #region User Stream
+
         /// <summary>
         /// Start a new user data stream.
         /// </summary>
@@ -535,7 +579,8 @@ namespace Binance.API.Csharp.Client
                 throw new ArgumentException("listenKey cannot be empty. ", "listenKey");
             }
 
-            var result = await _apiClient.CallAsync<dynamic>(ApiMethod.PUT, EndPoints.KeepAliveUserStream, false, $"listenKey={listenKey}");
+            var result = await _apiClient.CallAsync<dynamic>(ApiMethod.PUT, EndPoints.KeepAliveUserStream, false,
+                $"listenKey={listenKey}");
 
             return result;
         }
@@ -552,13 +597,16 @@ namespace Binance.API.Csharp.Client
                 throw new ArgumentException("listenKey cannot be empty. ", "listenKey");
             }
 
-            var result = await _apiClient.CallAsync<dynamic>(ApiMethod.DELETE, EndPoints.CloseUserStream, false, $"listenKey={listenKey}");
+            var result = await _apiClient.CallAsync<dynamic>(ApiMethod.DELETE, EndPoints.CloseUserStream, false,
+                $"listenKey={listenKey}");
 
             return result;
         }
+
         #endregion
 
         #region Web Socket Client
+
         /// <summary>
         /// Listen to the Depth endpoint.
         /// </summary>
@@ -581,7 +629,8 @@ namespace Binance.API.Csharp.Client
         /// <param name="symbol">Ticker symbol.</param>
         /// <param name="interval">Time interval to retreive.</param>
         /// <param name="klineHandler">Handler to be used when a message is received.</param>
-        public void ListenKlineEndpoint(string symbol, TimeInterval interval, ApiClientAbstract.MessageHandler<KlineMessage> klineHandler)
+        public void ListenKlineEndpoint(string symbol, TimeInterval interval,
+            ApiClientAbstract.MessageHandler<KlineMessage> klineHandler)
         {
             if (string.IsNullOrWhiteSpace(symbol))
             {
@@ -597,7 +646,8 @@ namespace Binance.API.Csharp.Client
         /// </summary>
         /// <param name="symbol">Ticker symbol.</param>
         /// <param name="tradeHandler">Handler to be used when a message is received.</param>
-        public void ListenTradeEndpoint(string symbol, ApiClientAbstract.MessageHandler<AggregateTradeMessage> tradeHandler)
+        public void ListenTradeEndpoint(string symbol,
+            ApiClientAbstract.MessageHandler<AggregateTradeMessage> tradeHandler)
         {
             if (string.IsNullOrWhiteSpace(symbol))
             {
@@ -615,7 +665,9 @@ namespace Binance.API.Csharp.Client
         /// <param name="tradesHandler">Handler to be used when a trade message is received.</param>
         /// <param name="ordersHandler">Handler to be used when a order message is received.</param>
         /// <returns></returns>
-        public string ListenUserDataEndpoint(ApiClientAbstract.MessageHandler<AccountUpdatedMessage> accountInfoHandler, ApiClientAbstract.MessageHandler<OrderOrTradeUpdatedMessage> tradesHandler, ApiClientAbstract.MessageHandler<OrderOrTradeUpdatedMessage> ordersHandler)
+        public string ListenUserDataEndpoint(ApiClientAbstract.MessageHandler<AccountUpdatedMessage> accountInfoHandler,
+            ApiClientAbstract.MessageHandler<OrderOrTradeUpdatedMessage> tradesHandler,
+            ApiClientAbstract.MessageHandler<OrderOrTradeUpdatedMessage> ordersHandler)
         {
             var listenKey = StartUserStream().Result.ListenKey;
 
@@ -623,6 +675,7 @@ namespace Binance.API.Csharp.Client
 
             return listenKey;
         }
+
         #endregion
     }
 }
