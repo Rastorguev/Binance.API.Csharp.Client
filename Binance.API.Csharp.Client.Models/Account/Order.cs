@@ -38,12 +38,4 @@ namespace Binance.API.Csharp.Client.Models.Account
         [JsonProperty("time")]
         public long UnixTime { get; set; }
     }
-
-    public static class OrderExtensions
-    {
-        public static DateTime GetTime(this Order order)
-        {
-            return DateTimeOffset.FromUnixTimeMilliseconds(order.UnixTime).DateTime;
-        }
-    }
 }

@@ -61,6 +61,7 @@
     <Compile Include="Enums\TimeInForce.cs" />
     <Compile Include="Enums\TimeInterval.cs" />
     <Compile Include="Enums\WithdrawStatus.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="General\ServerInfo.cs" />
     <Compile Include="Account\AccountInfo.cs" />
     <Compile Include="Market\AggregateTrade.cs" />
