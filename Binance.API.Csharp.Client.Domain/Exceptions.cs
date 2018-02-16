@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Binance.API.Csharp.Client
+namespace Binance.API.Csharp.Client.Domain
 {
     public class BinanceApiException : Exception
     {

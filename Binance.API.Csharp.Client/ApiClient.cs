@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Binance.API.Csharp.Client.Domain;
 using Binance.API.Csharp.Client.Domain.Abstract;
 using Binance.API.Csharp.Client.Domain.Interfaces;
 using Binance.API.Csharp.Client.Models.Enums;

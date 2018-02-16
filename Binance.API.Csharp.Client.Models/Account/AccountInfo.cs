@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace Binance.API.Csharp.Client.Models.Market
+namespace Binance.API.Csharp.Client.Models.Account
 {
     public class AccountInfo
     {

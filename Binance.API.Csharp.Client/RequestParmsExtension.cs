@@ -1,6 +1,7 @@
 ﻿using System;
+using Binance.API.Csharp.Client.Models.Enums;
 
-namespace Binance.API.Csharp.Client.Models.Enums
+namespace Binance.API.Csharp.Client
 {
     public static class RequestParmsExtension
     {
