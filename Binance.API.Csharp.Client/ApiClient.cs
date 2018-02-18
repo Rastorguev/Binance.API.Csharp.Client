@@ -6,6 +6,7 @@ using Binance.API.Csharp.Client.Domain;
 using Binance.API.Csharp.Client.Domain.Abstract;
 using Binance.API.Csharp.Client.Domain.Interfaces;
 using Binance.API.Csharp.Client.Models.Enums;
+using Binance.API.Csharp.Client.Models.General;
 using Binance.API.Csharp.Client.Models.WebSocket;
 using Binance.API.Csharp.Client.Utils;
 using Newtonsoft.Json;
@@ -15,6 +16,8 @@ namespace Binance.API.Csharp.Client
 {
     public class ApiClient : ApiClientAbstract, IApiClient
     {
+        private TimeSpan ClientServerTimeDiff { get; set; } = TimeSpan.Zero;
+
         /// <summary>
         /// ctor.
         /// </summary>
@@ -43,8 +46,8 @@ namespace Binance.API.Csharp.Client
 
             if (isSigned)
             {
-                parameters += (!string.IsNullOrWhiteSpace(parameters) ? "&timestamp=" : "timestamp=") +
-                              Utilities.GenerateTimeStamp(DateTime.Now.ToUniversalTime());
+                var timeStamp = Utilities.GenerateTimeStamp(DateTime.Now.ToUniversalTime() + ClientServerTimeDiff);
+                parameters += (!string.IsNullOrWhiteSpace(parameters) ? "&timestamp=" : "timestamp=") + timeStamp;
 
                 var signature = Utilities.GenerateSignature(_apiSecret, parameters);
                 finalEndpoint = $"{endpoint}?{parameters}&signature={signature}";
@@ -68,6 +71,12 @@ namespace Binance.API.Csharp.Client
                 {
                     var errorPayload = JsonConvert.DeserializeObject<BinanceErrorPayload>(content);
 
+                    //-1021 INVALID_TIMESTAMP
+                    if (errorPayload.ErrorCode == -1021)
+                    {
+                        await HandleInvalidTimestamp();
+                    }
+
                     throw new InvalidRequestException(errorPayload.ErrorCode, errorPayload.Message);
                 }
             }
@@ -78,6 +87,15 @@ namespace Binance.API.Csharp.Client
             }
 
             throw new BinanceApiException("Binance Api Error");
+        }
+
+        private async Task HandleInvalidTimestamp()
+        {
+            var utcNow = DateTime.Now.ToUniversalTime();
+            var serverUnixTime = (await CallAsync<ServerInfo>(ApiMethod.GET, EndPoints.CheckServerTime)).ServerTime;
+            var serverUtcTime = DateTimeOffset.FromUnixTimeMilliseconds(serverUnixTime).ToUniversalTime();
+
+            ClientServerTimeDiff = serverUtcTime - utcNow;
         }
 
         /// <summary>
@@ -149,7 +167,7 @@ namespace Binance.API.Csharp.Client
                         var orderOrTradeUpdatedMessage =
                             JsonConvert.DeserializeObject<OrderOrTradeUpdatedMessage>(e.Data);
                         var isTrade = orderOrTradeUpdatedMessage.ExecutionType == ExecutionType.Trade;
-                   
+
                         if (isTrade)
                         {
                             tradeHandler(orderOrTradeUpdatedMessage);
