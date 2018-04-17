@@ -19,6 +19,8 @@ namespace Binance.API.Csharp.Client.Models.Account
         public OrderType Type { get; set; }
         [JsonProperty("origQty")]
         public decimal OrigQty { get; set; }
+        [JsonProperty("executedQty")]
+        public decimal ExecutedQty { get; set; }
         [JsonProperty("price")]
         public decimal Price { get; set; }
         [JsonProperty("status")]
