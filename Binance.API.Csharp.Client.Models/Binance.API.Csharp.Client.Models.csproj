@@ -73,7 +73,7 @@
     <Compile Include="Market\SymbolPrice.cs" />
     <Compile Include="Market\TradingRules\Filter.cs" />
     <Compile Include="Market\TradingRules\RateLimit.cs" />
-    <Compile Include="Market\TradingRules\Symbol.cs" />
+    <Compile Include="Market\TradingRules\TradingRule.cs" />
     <Compile Include="Market\TradingRules\TradingRules.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserStream\UserStreamInfo.cs" />

@@ -7,6 +7,7 @@ using Binance.API.Csharp.Client.Models.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Binance.API.Csharp.Client.Models.Market.TradingRules;
 using static Binance.API.Csharp.Client.Domain.Abstract.ApiClientAbstract;
 
 namespace Binance.API.Csharp.Client.Domain.Interfaces
@@ -28,6 +29,9 @@ namespace Binance.API.Csharp.Client.Domain.Interfaces
         #endregion
 
         #region Market Data
+
+        Task<TradingRules> LoadTradingRules();
+
         /// <summary>
         /// Get order book for a particular symbol.
         /// </summary>

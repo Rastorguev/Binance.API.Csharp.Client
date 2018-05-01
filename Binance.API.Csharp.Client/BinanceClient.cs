@@ -26,7 +26,7 @@ namespace Binance.API.Csharp.Client
         {
             if (loadTradingRules)
             {
-                LoadTradingRules();
+                _tradingRules = LoadTradingRules().Result;
             }
         }
 
@@ -48,10 +48,12 @@ namespace Binance.API.Csharp.Client
             {
                 throw new ArgumentException("Invalid symbol. ", "symbol");
             }
+
             if (quantity <= 0m)
             {
                 throw new ArgumentException("Quantity must be greater than zero.", "quantity");
             }
+
             if (orderType == OrderType.Limit)
             {
                 if (unitPrice <= 0m)
@@ -63,21 +65,25 @@ namespace Binance.API.Csharp.Client
             // Validating Trading Rules
             if (_tradingRules != null)
             {
-                var symbolInfo = _tradingRules.Symbols.Where(r => r.SymbolName.ToUpper() == symbol.ToUpper())
+                var symbolInfo = _tradingRules.Symbols.Where(r => r.Symbol.ToUpper() == symbol.ToUpper())
                     .FirstOrDefault();
-                var priceFilter = symbolInfo.Filters.Where(r => r.FilterType == "PRICE_FILTER").FirstOrDefault();
-                var sizeFilter = symbolInfo.Filters.Where(r => r.FilterType == "LOT_SIZE").FirstOrDefault();
+                var priceFilter = symbolInfo.Filters.Where(r => r.FilterType == ExcangeFilterType.PriceFilter)
+                    .FirstOrDefault();
+                var sizeFilter = symbolInfo.Filters.Where(r => r.FilterType == ExcangeFilterType.LotSize)
+                    .FirstOrDefault();
 
                 if (symbolInfo == null)
                 {
                     throw new ArgumentException("Invalid symbol. ", "symbol");
                 }
+
                 if (quantity < sizeFilter.MinQty)
                 {
                     throw new ArgumentException(
                         $"Quantity for this symbol is lower than allowed! Quantity must be greater than: {sizeFilter.MinQty}",
                         "quantity");
                 }
+
                 if (icebergQty > 0m && !symbolInfo.IcebergAllowed)
                 {
                     throw new Exception($"Iceberg orders not allowed for this symbol.");
@@ -93,12 +99,6 @@ namespace Binance.API.Csharp.Client
                     }
                 }
             }
-        }
-
-        private void LoadTradingRules()
-        {
-            var apiClient = new ApiClient("", "", EndPoints.TradingRules, addDefaultHeaders: false);
-            _tradingRules = apiClient.CallAsync<TradingRules>(ApiMethod.GET, "").Result;
         }
 
         #endregion
@@ -129,6 +129,13 @@ namespace Binance.API.Csharp.Client
         #endregion
 
         #region Market Data
+
+        public async Task<TradingRules> LoadTradingRules()
+        {
+            var tradingRules = await _apiClient.CallAsync<TradingRules>(ApiMethod.GET, EndPoints.TradingRules);
+
+            return tradingRules;
+        }
 
         /// <summary>
         /// Get order book for a particular symbol.
@@ -476,10 +483,12 @@ namespace Binance.API.Csharp.Client
             {
                 throw new ArgumentException("asset cannot be empty. ", "asset");
             }
+
             if (amount <= 0m)
             {
                 throw new ArgumentException("amount must be greater than zero.", "amount");
             }
+
             if (string.IsNullOrWhiteSpace(address))
             {
                 throw new ArgumentException("address cannot be empty. ", "address");
