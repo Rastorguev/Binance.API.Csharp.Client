@@ -239,7 +239,16 @@ namespace Binance.API.Csharp.Client
         public async Task<IEnumerable<SymbolPrice>> GetAllPrices()
         {
             var result =
-                await _apiClient.CallAsync<IEnumerable<SymbolPrice>>(ApiMethod.GET, EndPoints.AllPrices, false);
+                await _apiClient.CallAsync<IEnumerable<SymbolPrice>>(ApiMethod.GET, EndPoints.Price, false);
+
+            return result;
+        }
+
+        public async Task<SymbolPrice> GetPrice(string symbol)
+        {
+            var args = $"symbol={symbol.ToUpper()}";
+            var result =
+                await _apiClient.CallAsync<SymbolPrice>(ApiMethod.GET, EndPoints.Price, false, args);
 
             return result;
         }

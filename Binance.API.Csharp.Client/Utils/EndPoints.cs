@@ -15,7 +15,7 @@
         public static readonly string AggregateTrades = "/api/v1/aggTrades";
         public static readonly string Candlesticks = "/api/v1/klines";
         public static readonly string TickerPriceChange24H = "/api/v1/ticker/24hr";
-        public static readonly string AllPrices = "/api/v1/ticker/allPrices";
+        public static readonly string Price = "/api/v3/ticker/price";
         public static readonly string OrderBookTicker = "/api/v1/ticker/allBookTickers";
         public static readonly string TradingRules = "/api/v1/exchangeInfo";
         #endregion

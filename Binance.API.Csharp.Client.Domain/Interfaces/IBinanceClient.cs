@@ -71,6 +71,12 @@ namespace Binance.API.Csharp.Client.Domain.Interfaces
         Task<IEnumerable<SymbolPrice>> GetAllPrices();
 
         /// <summary>
+        /// Latest price for symbol.
+        /// </summary>
+        /// <returns></returns>
+        Task<SymbolPrice> GetPrice(string symbol);
+
+        /// <summary>
         /// Best price/qty on the order book for all symbols.
         /// </summary>
         /// <returns></returns>
