@@ -136,7 +136,7 @@ namespace Binance.API.Csharp.Client.Domain.Interfaces
         /// <param name="symbol">Ticker symbol.</param>
         /// <param name="recvWindow">Specific number of milliseconds the request is valid for.</param>
         /// <returns></returns>
-        Task<IEnumerable<Order>> GetCurrentOpenOrders(string symbol, long recvWindow = 6000000);
+        Task<IEnumerable<Order>> GetCurrentOpenOrders(string symbol = null, long recvWindow = 6000000);
 
         /// <summary>
         /// Get all account orders; active, canceled, or filled.
