@@ -8,7 +8,7 @@ namespace Binance.API.Csharp.Client.Domain.Abstract
         /// <summary>
         /// Secret used to authenticate within the API.
         /// </summary>
-        public TradingRules _tradingRules;
+        public TradingRulesContainer RulesContainer;
 
         /// <summary>
         /// Client to be used to call the API.

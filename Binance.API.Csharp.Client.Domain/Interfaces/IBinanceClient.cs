@@ -30,7 +30,7 @@ namespace Binance.API.Csharp.Client.Domain.Interfaces
 
         #region Market Data
 
-        Task<TradingRules> LoadTradingRules();
+        Task<TradingRulesContainer> LoadTradingRules();
 
         /// <summary>
         /// Get order book for a particular symbol.

@@ -26,7 +26,7 @@ namespace Binance.API.Csharp.Client
         {
             if (loadTradingRules)
             {
-                _tradingRules = LoadTradingRules().Result;
+                RulesContainer = LoadTradingRules().Result;
             }
         }
 
@@ -63,38 +63,34 @@ namespace Binance.API.Csharp.Client
             }
 
             // Validating Trading Rules
-            if (_tradingRules != null)
+            if (RulesContainer != null)
             {
-                var symbolInfo = _tradingRules.Symbols.Where(r => r.Symbol.ToUpper() == symbol.ToUpper())
-                    .FirstOrDefault();
-                var priceFilter = symbolInfo.Filters.Where(r => r.FilterType == ExcangeFilterType.PriceFilter)
-                    .FirstOrDefault();
-                var sizeFilter = symbolInfo.Filters.Where(r => r.FilterType == ExcangeFilterType.LotSize)
+                var rules = RulesContainer.Rules.Where(r => r.Symbol.ToUpper() == symbol.ToUpper())
                     .FirstOrDefault();
 
-                if (symbolInfo == null)
+                if (rules == null)
                 {
                     throw new ArgumentException("Invalid symbol. ", "symbol");
                 }
 
-                if (quantity < sizeFilter.MinQty)
+                if (quantity < rules.MinQty)
                 {
                     throw new ArgumentException(
-                        $"Quantity for this symbol is lower than allowed! Quantity must be greater than: {sizeFilter.MinQty}",
+                        $"Quantity for this symbol is lower than allowed! Quantity must be greater than: {rules.MinQty}",
                         "quantity");
                 }
 
-                if (icebergQty > 0m && !symbolInfo.IcebergAllowed)
+                if (icebergQty > 0m && !rules.IcebergAllowed)
                 {
                     throw new Exception($"Iceberg orders not allowed for this symbol.");
                 }
 
                 if (orderType == OrderType.Limit)
                 {
-                    if (unitPrice < priceFilter.MinPrice)
+                    if (unitPrice < rules.MinPrice)
                     {
                         throw new ArgumentException(
-                            $"Price for this symbol is lower than allowed! Price must be greater than: {priceFilter.MinPrice}",
+                            $"Price for this symbol is lower than allowed! Price must be greater than: {rules.MinPrice}",
                             "price");
                     }
                 }
@@ -130,9 +126,9 @@ namespace Binance.API.Csharp.Client
 
         #region Market Data
 
-        public async Task<TradingRules> LoadTradingRules()
+        public async Task<TradingRulesContainer> LoadTradingRules()
         {
-            var tradingRules = await _apiClient.CallAsync<TradingRules>(ApiMethod.GET, EndPoints.TradingRules);
+            var tradingRules = await _apiClient.CallAsync<TradingRulesContainer>(ApiMethod.GET, EndPoints.TradingRules);
 
             return tradingRules;
         }
