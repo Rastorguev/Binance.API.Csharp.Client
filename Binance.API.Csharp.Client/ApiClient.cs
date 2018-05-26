@@ -65,7 +65,8 @@ namespace Binance.API.Csharp.Client
                 }
                 if (response.StatusCode == HttpStatusCode.GatewayTimeout)
                 {
-                    throw new BinanceApiException("Api Request Timeout.");
+                    throw new BinanceApiException("Api Request Timeout.")
+                        .AddRequestStringDetails(finalEndpoint);
                 }
                 if (response.StatusCode == HttpStatusCode.BadRequest)
                 {
@@ -77,16 +78,19 @@ namespace Binance.API.Csharp.Client
                         await HandleInvalidTimestamp();
                     }
 
-                    throw new InvalidRequestException(errorPayload.ErrorCode, errorPayload.Message);
+                    throw new InvalidRequestException(errorPayload.ErrorCode, errorPayload.Message)
+                        .AddRequestStringDetails(finalEndpoint);
                 }
             }
 
             catch (Exception ex) when (!(ex is BinanceApiException))
             {
-                throw new BinanceApiException("Binance Api Error", ex);
+                throw new BinanceApiException("Binance Api Error", ex)
+                    .AddRequestStringDetails(finalEndpoint);
             }
 
-            throw new BinanceApiException("Binance Api Error");
+            throw new BinanceApiException("Binance Api Error")
+                .AddRequestStringDetails(finalEndpoint);
         }
 
         private async Task HandleInvalidTimestamp()
@@ -195,6 +199,16 @@ namespace Binance.API.Csharp.Client
 
             [JsonProperty("msg")]
             public string Message { get; set; }
+        }
+    }
+
+    public static class ExceptionExtensions
+    {
+        public static Exception AddRequestStringDetails(this Exception ex, string requestString)
+        {
+            ex.Data.Add("RequestString", requestString);
+
+            return ex;
         }
     }
 }
