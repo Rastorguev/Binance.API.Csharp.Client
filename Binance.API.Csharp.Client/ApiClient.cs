@@ -54,20 +54,24 @@ namespace Binance.API.Csharp.Client
             }
 
             var request = new HttpRequestMessage(Utilities.CreateHttpMethod(method.ToString()), finalEndpoint);
+            string content = null;
 
             try
             {
                 var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-                var content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                content = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 if (response.IsSuccessStatusCode)
                 {
                     return JsonConvert.DeserializeObject<T>(content);
                 }
+
                 if (response.StatusCode == HttpStatusCode.GatewayTimeout)
                 {
                     throw new BinanceApiException("Api Request Timeout.")
-                        .AddRequestStringDetails(finalEndpoint);
+                        .AddRequestStringDetails(finalEndpoint)
+                        .AddResponseDetails(content);
                 }
+
                 if (response.StatusCode == HttpStatusCode.BadRequest)
                 {
                     var errorPayload = JsonConvert.DeserializeObject<BinanceErrorPayload>(content);
@@ -79,18 +83,21 @@ namespace Binance.API.Csharp.Client
                     }
 
                     throw new InvalidRequestException(errorPayload.ErrorCode, errorPayload.Message)
-                        .AddRequestStringDetails(finalEndpoint);
+                        .AddRequestStringDetails(finalEndpoint)
+                        .AddResponseDetails(content);
                 }
             }
 
             catch (Exception ex) when (!(ex is BinanceApiException))
             {
                 throw new BinanceApiException("Binance Api Error", ex)
-                    .AddRequestStringDetails(finalEndpoint);
+                    .AddRequestStringDetails(finalEndpoint)
+                    .AddResponseDetails(content);
             }
 
             throw new BinanceApiException("Binance Api Error")
-                .AddRequestStringDetails(finalEndpoint);
+                .AddRequestStringDetails(finalEndpoint)
+                .AddResponseDetails(content);
         }
 
         private async Task HandleInvalidTimestamp()
@@ -180,6 +187,7 @@ namespace Binance.API.Csharp.Client
                         {
                             orderHandler(orderOrTradeUpdatedMessage);
                         }
+
                         break;
                 }
             };
@@ -207,6 +215,13 @@ namespace Binance.API.Csharp.Client
         public static Exception AddRequestStringDetails(this Exception ex, string requestString)
         {
             ex.Data.Add("RequestString", requestString);
+
+            return ex;
+        }
+
+        public static Exception AddResponseDetails(this Exception ex, string responce)
+        {
+            ex.Data.Add("Response", responce ?? string.Empty);
 
             return ex;
         }
