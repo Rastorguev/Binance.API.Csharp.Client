@@ -58,14 +58,14 @@ namespace Binance.API.Csharp.Client.Domain.Abstract
             var handler = new HttpClientHandler();
 
             //Binance api allows only 10 requests per 1 seconds.
-            var throttlingHandler = new ThrottlingMessageHandler(new TimeSpanSemaphore(8, TimeSpan.FromSeconds(1)), handler);
+            var throttlingHandler = new ThrottlingMessageHandler(new TimeSpanSemaphore(10, TimeSpan.FromSeconds(1)), handler);
 
             _apiUrl = apiUrl;
             _apiKey = apiKey;
             _apiSecret = apiSecret;
             _webSocketEndpoint = webSocketEndpoint;
             _openSockets = new List<WebSocket>();
-            _httpClient = new HttpClient()
+            _httpClient = new HttpClient(throttlingHandler)
             {
                 BaseAddress = new Uri(_apiUrl),
                
