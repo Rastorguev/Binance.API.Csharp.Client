@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using WebSocketSharp;
 
 namespace Binance.API.Csharp.Client.Domain.Abstract
@@ -50,16 +51,24 @@ namespace Binance.API.Csharp.Client.Domain.Abstract
         /// <param name="apiKey">Key used to authenticate within the API.</param>
         /// <param name="apiSecret">API secret used to signed API calls.</param>
         /// <param name="apiUrl">API based url.</param>
-        public ApiClientAbstract(string apiKey, string apiSecret, string apiUrl = @"https://www.binance.com", string webSocketEndpoint = @"wss://stream.binance.com:9443/ws/", bool addDefaultHeaders = true)
+        public ApiClientAbstract(string apiKey, string apiSecret, string apiUrl = @"https://www.binance.com",
+            string webSocketEndpoint = @"wss://stream.binance.com:9443/ws/", bool addDefaultHeaders = true)
         {
+
+            var handler = new HttpClientHandler();
+
+            //Binance api allows only 10 requests per 1 seconds.
+            var throttlingHandler = new ThrottlingMessageHandler(new TimeSpanSemaphore(8, TimeSpan.FromSeconds(1)), handler);
+
             _apiUrl = apiUrl;
             _apiKey = apiKey;
             _apiSecret = apiSecret;
             _webSocketEndpoint = webSocketEndpoint;
             _openSockets = new List<WebSocket>();
-            _httpClient = new HttpClient
+            _httpClient = new HttpClient()
             {
-                BaseAddress = new Uri(_apiUrl)
+                BaseAddress = new Uri(_apiUrl),
+               
             };
 
             if (addDefaultHeaders)
@@ -74,11 +83,11 @@ namespace Binance.API.Csharp.Client.Domain.Abstract
         private void ConfigureHttpClient()
         {
             _httpClient.DefaultRequestHeaders
-                 .Add("X-MBX-APIKEY", _apiKey);
+                .Add("X-MBX-APIKEY", _apiKey);
 
             _httpClient.DefaultRequestHeaders
-                    .Accept
-                    .Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
     }
 }
