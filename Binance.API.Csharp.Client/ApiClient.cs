@@ -76,15 +76,7 @@ namespace Binance.API.Csharp.Client
                 {
                     var errorPayload = JsonConvert.DeserializeObject<BinanceErrorPayload>(content);
 
-                    //-1021 INVALID_TIMESTAMP
-                    if (errorPayload.ErrorCode == -1021)
-                    {
-                        await HandleInvalidTimestamp();
-                    }
-
-                    throw new InvalidRequestException(errorPayload.ErrorCode, errorPayload.Message)
-                        .AddRequestStringDetails(finalEndpoint)
-                        .AddResponseDetails(content);
+                    await HandleApiException<T>(errorPayload, finalEndpoint, content);
                 }
             }
 
@@ -98,6 +90,26 @@ namespace Binance.API.Csharp.Client
             throw new BinanceApiException("Binance Api Error")
                 .AddRequestStringDetails(finalEndpoint)
                 .AddResponseDetails(content);
+        }
+
+        private async Task HandleApiException<T>(BinanceErrorPayload errorPayload, string finalEndpoint, string content)
+        {
+            var errorCode = errorPayload.ErrorCode;
+            switch (errorCode)
+            {
+                case -1021:
+                    await HandleInvalidTimestamp();
+                    break;
+                case -2010:
+                    throw new InsufficientBalanceException(errorCode, errorPayload.Message);
+                case -2011:
+                    throw new UnknownOrderException(errorCode, errorPayload.Message);
+                default:
+                    throw new InvalidRequestException(errorCode, errorPayload.Message)
+                        .AddRequestStringDetails(finalEndpoint)
+                        .AddResponseDetails(content);
+            }
+
         }
 
         private async Task HandleInvalidTimestamp()
