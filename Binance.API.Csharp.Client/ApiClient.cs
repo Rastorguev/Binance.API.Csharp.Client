@@ -95,21 +95,30 @@ namespace Binance.API.Csharp.Client
         private async Task HandleApiException<T>(BinanceErrorPayload errorPayload, string finalEndpoint, string content)
         {
             var errorCode = errorPayload.ErrorCode;
+            Exception ex = null;
             switch (errorCode)
             {
                 case -1021:
                     await HandleInvalidTimestamp();
                     break;
                 case -2010:
-                    throw new InsufficientBalanceException(errorCode, errorPayload.Message);
+                    ex = new InsufficientBalanceException(errorCode, errorPayload.Message);
+                    break;
                 case -2011:
-                    throw new UnknownOrderException(errorCode, errorPayload.Message);
+                    ex = new UnknownOrderException(errorCode, errorPayload.Message);
+                    break;
                 default:
-                    throw new InvalidRequestException(errorCode, errorPayload.Message)
-                        .AddRequestStringDetails(finalEndpoint)
-                        .AddResponseDetails(content);
+                    ex = new InvalidRequestException(errorCode, errorPayload.Message);
+                    break;
             }
 
+            if (ex != null)
+            {
+                ex.AddRequestStringDetails(finalEndpoint)
+                    .AddResponseDetails(content);
+
+                throw ex;
+            }
         }
 
         private async Task HandleInvalidTimestamp()
