@@ -1,5 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Binance.API.Csharp.Client.Models.Account;
+using Newtonsoft.Json;
 
 namespace Binance.API.Csharp.Client.Models.WebSocket
 {
@@ -24,9 +25,11 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         [JsonProperty("D")]
         public bool CanDeposit { get; set; }
         [JsonProperty("B")]
-        public IEnumerable<Balance> Balances { get; set; }
+        [JsonConverter(typeof(ConcreteTypeConverter<IEnumerable<Balance>>))]
+        public IEnumerable<IBalance> Balances { get; set; }
     }
-    public class Balance
+
+    public class Balance : IBalance
     {
         [JsonProperty("a")]
         public string Asset { get; set; }

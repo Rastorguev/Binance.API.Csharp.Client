@@ -20,9 +20,11 @@ namespace Binance.API.Csharp.Client.Models.Account
         [JsonProperty("canDeposit")]
         public bool CanDeposit { get; set; }
         [JsonProperty("balances")]
-        public IEnumerable<Balance> Balances { get; set; }
+        [JsonConverter(typeof(ConcreteTypeConverter<IEnumerable<Balance>>))]
+        public IEnumerable<IBalance> Balances { get; set; }
     }
-    public class Balance
+
+    public class Balance : IBalance
     {
         [JsonProperty("asset")]
         public string Asset { get; set; }
