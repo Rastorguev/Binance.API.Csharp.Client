@@ -1,11 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace Binance.API.Csharp.Client.Models.Market.TradingRules
@@ -14,18 +8,25 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
     {
         [JsonProperty("filterType")]
         public ExcangeFilterType FilterType { get; set; }
+
         [JsonProperty("minPrice")]
         public decimal MinPrice { get; set; }
+
         [JsonProperty("maxPrice")]
         public decimal MaxPrice { get; set; }
+
         [JsonProperty("tickSize")]
         public decimal TickSize { get; set; }
+
         [JsonProperty("minQty")]
         public decimal MinQty { get; set; }
+
         [JsonProperty("maxQty")]
         public decimal MaxQty { get; set; }
+
         [JsonProperty("stepSize")]
         public decimal StepSize { get; set; }
+
         [JsonProperty("minNotional")]
         public decimal MinNotional { get; set; }
     }
@@ -35,9 +36,23 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
     {
         [EnumMember(Value = "PRICE_FILTER")]
         PriceFilter,
+
         [EnumMember(Value = "LOT_SIZE")]
         LotSize,
+
         [EnumMember(Value = "MIN_NOTIONAL")]
-        MinNotional
+        MinNotional,
+
+        [EnumMember(Value = "MAX_NUM_ALGO_ORDERS")]
+        MaxNumAlgoOrders,
+
+        [EnumMember(Value = "ICEBERG_PARTS")]
+        IcebergParts,
+
+        [EnumMember(Value = "EXCHANGE_MAX_NUM_ORDERS")]
+        ExchangeMaxNumOrders,
+
+        [EnumMember(Value = "EXCHANGE_MAX_NUM_ALGO_ORDERS")]
+        ExchangeMaxNumAlgoOrders
     }
 }
