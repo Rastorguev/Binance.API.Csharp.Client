@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account\DepositHistory.cs" />
+    <Compile Include="Account\IBalance.cs" />
     <Compile Include="Account\Trade.cs" />
     <Compile Include="Account\CanceledOrder.cs" />
     <Compile Include="Account\NewOrder.cs" />

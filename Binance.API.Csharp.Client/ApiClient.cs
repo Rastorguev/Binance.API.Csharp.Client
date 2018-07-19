@@ -76,15 +76,7 @@ namespace Binance.API.Csharp.Client
                 {
                     var errorPayload = JsonConvert.DeserializeObject<BinanceErrorPayload>(content);
 
-                    //-1021 INVALID_TIMESTAMP
-                    if (errorPayload.ErrorCode == -1021)
-                    {
-                        await HandleInvalidTimestamp();
-                    }
-
-                    throw new InvalidRequestException(errorPayload.ErrorCode, errorPayload.Message)
-                        .AddRequestStringDetails(finalEndpoint)
-                        .AddResponseDetails(content);
+                    await HandleApiException<T>(errorPayload, finalEndpoint, content);
                 }
             }
 
@@ -98,6 +90,35 @@ namespace Binance.API.Csharp.Client
             throw new BinanceApiException("Binance Api Error")
                 .AddRequestStringDetails(finalEndpoint)
                 .AddResponseDetails(content);
+        }
+
+        private async Task HandleApiException<T>(BinanceErrorPayload errorPayload, string finalEndpoint, string content)
+        {
+            var errorCode = errorPayload.ErrorCode;
+            Exception ex = null;
+            switch (errorCode)
+            {
+                case -1021:
+                    await HandleInvalidTimestamp();
+                    break;
+                case -2010:
+                    ex = new InsufficientBalanceException(errorCode, errorPayload.Message);
+                    break;
+                case -2011:
+                    ex = new UnknownOrderException(errorCode, errorPayload.Message);
+                    break;
+                default:
+                    ex = new InvalidRequestException(errorCode, errorPayload.Message);
+                    break;
+            }
+
+            if (ex != null)
+            {
+                ex.AddRequestStringDetails(finalEndpoint)
+                    .AddResponseDetails(content);
+
+                throw ex;
+            }
         }
 
         private async Task HandleInvalidTimestamp()
