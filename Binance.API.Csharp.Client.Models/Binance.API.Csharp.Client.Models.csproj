@@ -75,6 +75,7 @@
     <Compile Include="Market\SymbolPrice.cs" />
     <Compile Include="Market\TradingRules\Filter.cs" />
     <Compile Include="Market\TradingRules\RateLimit.cs" />
+    <Compile Include="Market\TradingRules\SymbolStatus.cs" />
     <Compile Include="Market\TradingRules\TradingRules.cs" />
     <Compile Include="Market\TradingRules\TradingRulesContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

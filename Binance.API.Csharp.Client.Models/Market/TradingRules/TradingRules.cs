@@ -7,7 +7,7 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
     public interface ITradingRules
     {
         string Symbol { get; set; }
-        string Status { get; set; }
+        SymbolStatus Status { get; set; }
         string BaseAsset { get; set; }
         int BaseAssetPrecision { get; set; }
         string QuoteAsset { get; set; }
@@ -28,7 +28,7 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
         [JsonProperty("symbol")]
         public string Symbol { get; set; }
         [JsonProperty("status")]
-        public string Status { get; set; }
+        public SymbolStatus Status { get; set; }
         [JsonProperty("baseAsset")]
         public string BaseAsset { get; set; }
         [JsonProperty("baseAssetPrecision")]
