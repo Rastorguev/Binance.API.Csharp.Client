@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
+using Binance.API.Csharp.Client.Models.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -7,7 +9,7 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
     public class Filter
     {
         [JsonProperty("filterType")]
-        public ExcangeFilterType FilterType { get; set; }
+        public ExchangeFilterType FilterType { get; set; }
 
         [JsonProperty("minPrice")]
         public decimal MinPrice { get; set; }
@@ -31,9 +33,12 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
         public decimal MinNotional { get; set; }
     }
 
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum ExcangeFilterType
+    [JsonConverter(typeof(DefaultValueEnumConverter))]
+    [DefaultValue(Unknown)]
+    public enum ExchangeFilterType
     {
+        Unknown = -1000,
+
         [EnumMember(Value = "PRICE_FILTER")]
         PriceFilter,
 

@@ -44,12 +44,12 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
         [JsonProperty("filters")]
         public IEnumerable<Filter> Filters { get; set; }
 
-        public decimal MinPrice => Filters.First(f => f.FilterType == ExcangeFilterType.PriceFilter).MinPrice;
-        public decimal MaxPrice => Filters.First(f => f.FilterType == ExcangeFilterType.PriceFilter).MaxPrice;
-        public decimal TickSize => Filters.First(f => f.FilterType == ExcangeFilterType.PriceFilter).TickSize;
-        public decimal MinQty => Filters.First(f => f.FilterType == ExcangeFilterType.LotSize).MinQty;
-        public decimal MaxQty => Filters.First(f => f.FilterType == ExcangeFilterType.LotSize).MaxQty;
-        public decimal StepSize => Filters.First(f => f.FilterType == ExcangeFilterType.LotSize).StepSize;
-        public decimal MinNotional => Filters.First(f => f.FilterType == ExcangeFilterType.MinNotional).MinNotional;
+        public decimal MinPrice => Filters.First(f => f.FilterType == ExchangeFilterType.PriceFilter).MinPrice;
+        public decimal MaxPrice => Filters.First(f => f.FilterType == ExchangeFilterType.PriceFilter).MaxPrice;
+        public decimal TickSize => Filters.First(f => f.FilterType == ExchangeFilterType.PriceFilter).TickSize;
+        public decimal MinQty => Filters.First(f => f.FilterType == ExchangeFilterType.LotSize).MinQty;
+        public decimal MaxQty => Filters.First(f => f.FilterType == ExchangeFilterType.LotSize).MaxQty;
+        public decimal StepSize => Filters.First(f => f.FilterType == ExchangeFilterType.LotSize).StepSize;
+        public decimal MinNotional => Filters.First(f => f.FilterType == ExchangeFilterType.MinNotional).MinNotional;
     }
 }

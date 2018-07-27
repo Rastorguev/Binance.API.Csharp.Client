@@ -26,7 +26,7 @@ namespace Binance.API.Csharp.Client.Models
                 }
 
                 var defaultValue = defaultValueAttribute.Value;
-                if (defaultValue == null || defaultValue.GetType() != objectType)
+                if (defaultValue.GetType() != objectType)
                 {
                     throw new JsonSerializationException(
                         $"Default value type ({defaultValue.GetType()}) doesn't match enum type ({objectType})");

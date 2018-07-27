@@ -1,10 +1,14 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Binance.API.Csharp.Client.Models.Enums
 {
+    [JsonConverter(typeof(DefaultValueEnumConverter))]
+    [DefaultValue(Unknown)]
     public enum OrderStatus
     {
+        Unknown = -1000,
         New,
         [EnumMember(Value = "PARTIALLY_FILLED")]
         PartiallyFilled,
