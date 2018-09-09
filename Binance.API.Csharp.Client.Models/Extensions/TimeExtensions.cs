@@ -1,9 +1,9 @@
 ﻿using System;
 using Binance.API.Csharp.Client.Models.Enums;
 
-namespace Binance.API.Csharp.Client.Models
+namespace Binance.API.Csharp.Client.Models.Extensions
 {
-    public static class Extensions
+    public static class TimeExtensions
     {
         public static DateTime GetTime(this long unixTime)
         {
