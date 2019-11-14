@@ -8,7 +8,7 @@ namespace Binance.API.Csharp.Client.Models.WebSocket
         string Symbol { get; set; }
         OrderSide Side { get; set; }
         OrderType Type { get; set; }
-        decimal OrigQty { get; set; }
+        decimal OrderQuantity { get; set; }
         decimal Price { get; set; }
         OrderStatus Status { get; set; }
     }

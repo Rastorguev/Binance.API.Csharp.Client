@@ -11,13 +11,13 @@
         #endregion
 
         #region Market Data Endpoints
-        public static readonly string OrderBook = "/api/v1/depth";
-        public static readonly string AggregateTrades = "/api/v1/aggTrades";
-        public static readonly string Candlesticks = "/api/v1/klines";
-        public static readonly string TickerPriceChange24H = "/api/v1/ticker/24hr";
+        public static readonly string OrderBook = "/api/v3/depth";
+        public static readonly string AggregateTrades = "/api/v3/aggTrades";
+        public static readonly string Candlesticks = "/api/v3/klines";
+        public static readonly string TickerPriceChange24H = "/api/v3/ticker/24hr";
         public static readonly string Price = "/api/v3/ticker/price";
-        public static readonly string OrderBookTicker = "/api/v1/ticker/allBookTickers";
-        public static readonly string TradingRules = "/api/v1/exchangeInfo";
+        public static readonly string OrderBookTicker = "/api/v3/ticker/allBookTickers";
+        public static readonly string TradingRules = "/api/v3/exchangeInfo";
         #endregion
 
         #region Account Endpoints
@@ -36,9 +36,9 @@
         #endregion
 
         #region User Stream Endpoints
-        public static readonly string StartUserStream = "/api/v1/userDataStream";
-        public static readonly string KeepAliveUserStream = "/api/v1/userDataStream";
-        public static readonly string CloseUserStream = "/api/v1/userDataStream";
+        public static readonly string StartUserStream = "/api/v3/userDataStream";
+        public static readonly string KeepAliveUserStream = "/api/v3/userDataStream";
+        public static readonly string CloseUserStream = "/api/v3/userDataStream";
         #endregion
     }
 }

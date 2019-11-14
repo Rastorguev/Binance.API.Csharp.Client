@@ -19,7 +19,7 @@ namespace Binance.API.Csharp.Client.Models.Account
         [JsonConverter(typeof(StringEnumConverter))]
         public OrderType Type { get; set; }
         [JsonProperty("origQty")]
-        public decimal OrigQty { get; set; }
+        public decimal OrderQuantity { get; set; }
         [JsonProperty("price")]
         public decimal Price { get; set; }
         [JsonProperty("status")]
