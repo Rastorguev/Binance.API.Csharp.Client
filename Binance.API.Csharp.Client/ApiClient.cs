@@ -190,7 +190,7 @@ namespace Binance.API.Csharp.Client
 
                 switch (message.EventType)
                 {
-                    case "outboundAccountInfo":
+                    case "outboundAccountPosition":
                         var accountUpdatedMessage = JsonConvert.DeserializeObject<AccountUpdatedMessage>(e.Data);
                         accountHandler(accountUpdatedMessage);
                         break;
