@@ -31,6 +31,33 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
 
         [JsonProperty("minNotional")]
         public decimal MinNotional { get; set; }
+
+        [JsonProperty("multiplierUp")]
+        public decimal MultiplierUp { get; set; }
+
+        [JsonProperty("multiplierDown")]
+        public decimal MultiplierDown { get; set; }
+
+        [JsonProperty("avgPriceMins")]
+        public int AvgPriceMins { get; set; }
+
+        [JsonProperty("applyToMarket")]
+        public bool ApplyToMarket { get; set; }
+
+        [JsonProperty("limit")]
+        public int Limit { get; set; }
+        
+        [JsonProperty("maxNumOrders")]
+        public int MaxNumOrders { get; set; }
+
+        [JsonProperty("maxNumAlgoOrders")]
+        public int MaxNumAlgoOrders { get; set; }
+        
+        [JsonProperty("maxNumIcebergOrders")]
+        public int MaxNumIcebergOrders { get; set; }
+
+        [JsonProperty("maxPosition")]
+        public decimal MaxPosition { get; set; }
     }
 
     [JsonConverter(typeof(DefaultValueEnumConverter))]
@@ -42,17 +69,32 @@ namespace Binance.API.Csharp.Client.Models.Market.TradingRules
         [EnumMember(Value = "PRICE_FILTER")]
         PriceFilter,
 
+        [EnumMember(Value = "PERCENT_PRICE")]
+        PercentPrice,
+
         [EnumMember(Value = "LOT_SIZE")]
         LotSize,
 
         [EnumMember(Value = "MIN_NOTIONAL")]
         MinNotional,
 
-        [EnumMember(Value = "MAX_NUM_ALGO_ORDERS")]
-        MaxNumAlgoOrders,
-
         [EnumMember(Value = "ICEBERG_PARTS")]
         IcebergParts,
+
+        [EnumMember(Value = "MARKET_LOT_SIZE")]
+        MarketLotSize,
+
+        [EnumMember(Value = "MAX_NUM_ORDERS")]
+        MaxNumOrders,
+
+        [EnumMember(Value = "MAX_NUM_ALGO_ORDERS")]
+        MaxNumAlgoOrders, 
+        
+        [EnumMember(Value = "MAX_NUM_ICEBERG_ORDERS")]
+        MaxNumIcebergOrders, 
+        
+        [EnumMember(Value = "MAX_POSITION")]
+        MaxPosition,
 
         [EnumMember(Value = "EXCHANGE_MAX_NUM_ORDERS")]
         ExchangeMaxNumOrders,
